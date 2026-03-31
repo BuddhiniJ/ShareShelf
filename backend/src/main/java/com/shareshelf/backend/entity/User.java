@@ -31,6 +31,10 @@ public class User implements UserDetails {
 
 	@Column(nullable = false)
 	private String password;
+	
+	@Column(nullable = false)
+    @Builder.Default
+    private Double trustScore = 0.0;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
