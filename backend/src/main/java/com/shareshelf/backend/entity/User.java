@@ -31,10 +31,10 @@ public class User implements UserDetails {
 
 	@Column(nullable = false)
 	private String password;
-	
+
 	@Column(nullable = false)
-    @Builder.Default
-    private Double trustScore = 0.0;
+	@Builder.Default
+	private Double trustScore = 0.0;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -43,6 +43,12 @@ public class User implements UserDetails {
 	public enum Role {
 		USER, ADMIN
 	}
+
+	@Column(length = 500)
+	private String bio;
+
+	@Column
+	private String profilePicture;
 
 	// UserDetails overrides
 	@Override
