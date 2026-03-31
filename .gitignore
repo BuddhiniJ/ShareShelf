@@ -1,0 +1,31 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE/editor files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Java and JVM
+*.class
+hs_err_pid*
+replay_pid*
+
+# Build outputs
+target/
+build/
+out/
+
+# Maven wrapper binary (if generated locally)
+.mvn/wrapper/maven-wrapper.jar
