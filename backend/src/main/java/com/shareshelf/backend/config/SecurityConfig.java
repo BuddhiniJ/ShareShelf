@@ -32,6 +32,13 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(
+                        org.springframework.http.HttpMethod.GET,
+                        "/api/books",
+                        "/api/books/{id}",
+                        "/api/books/search",
+                        "/api/books/genre"
+                    ).permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
