@@ -2,6 +2,7 @@ package com.shareshelf.backend.service;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,11 @@ import com.shareshelf.backend.entity.Book.BookStatus;
 import com.shareshelf.backend.entity.BorrowRequest;
 import com.shareshelf.backend.entity.BorrowStatus;
 import com.shareshelf.backend.entity.User;
+import com.shareshelf.backend.event.BorrowApprovedEvent;
+import com.shareshelf.backend.event.BorrowCancelledEvent;
+import com.shareshelf.backend.event.BorrowRejectedEvent;
+import com.shareshelf.backend.event.BorrowRequestedEvent;
+import com.shareshelf.backend.event.BorrowReturnedEvent;
 import com.shareshelf.backend.exception.ResourceNotFoundException;
 import com.shareshelf.backend.exception.UnauthorizedException;
 import com.shareshelf.backend.repository.BookRepository;
@@ -32,6 +38,7 @@ public class BorrowService {
     private final BorrowRepository borrowRepository;
     private final BookRepository bookRepository;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     // ── Request to borrow a book ──────────────────────────────────────────
 
@@ -68,6 +75,8 @@ public class BorrowService {
                 .message(message)
                 .status(BorrowStatus.PENDING)
                 .build();
+        
+        eventPublisher.publishEvent(new BorrowRequestedEvent(this, borrowRepository.save(request)));
 
         return mapToResponse(borrowRepository.save(request));
     }
@@ -117,8 +126,11 @@ public class BorrowService {
         // Auto-update book status → BORROWED
         borrowRequest.getBook().setStatus(BookStatus.BORROWED);
         bookRepository.save(borrowRequest.getBook());
+        
+        BorrowRequest saved = borrowRepository.save(borrowRequest);
+        eventPublisher.publishEvent(new BorrowApprovedEvent(this, saved));  
+        return mapToResponse(saved);
 
-        return mapToResponse(borrowRepository.save(borrowRequest));
     }
 
     // ── Owner: reject a request ───────────────────────────────────────────
@@ -140,8 +152,11 @@ public class BorrowService {
 
         borrowRequest.setStatus(BorrowStatus.REJECTED);
         borrowRequest.setOwnerNote(action.getOwnerNote());
+        
+        BorrowRequest saved = borrowRepository.save(borrowRequest);
+        eventPublisher.publishEvent(new BorrowRejectedEvent(this, saved));
 
-        return mapToResponse(borrowRepository.save(borrowRequest));
+        return mapToResponse(saved);
     }
 
     // ── Borrower: cancel their own pending request ────────────────────────
@@ -162,7 +177,10 @@ public class BorrowService {
         }
 
         borrowRequest.setStatus(BorrowStatus.CANCELLED);
-        return mapToResponse(borrowRepository.save(borrowRequest));
+
+        BorrowRequest saved = borrowRepository.save(borrowRequest);
+        eventPublisher.publishEvent(new BorrowCancelledEvent(this, saved));  // ✅
+        return mapToResponse(saved);
     }
 
     // ── Owner: mark book as returned ─────────────────────────────────────
@@ -189,8 +207,9 @@ public class BorrowService {
         borrowRequest.getBook().setStatus(BookStatus.AVAILABLE);
         bookRepository.save(borrowRequest.getBook());
 
-        return mapToResponse(borrowRepository.save(borrowRequest));
-    }
+        BorrowRequest saved = borrowRepository.save(borrowRequest);
+        eventPublisher.publishEvent(new BorrowReturnedEvent(this, saved));   // ✅
+        return mapToResponse(saved);    }
 
     // ── Get single request by ID ──────────────────────────────────────────
 

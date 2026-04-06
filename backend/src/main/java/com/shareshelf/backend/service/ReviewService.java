@@ -2,6 +2,7 @@ package com.shareshelf.backend.service;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import com.shareshelf.backend.entity.BorrowRequest;
 import com.shareshelf.backend.entity.BorrowStatus;
 import com.shareshelf.backend.entity.Review;
 import com.shareshelf.backend.entity.User;
+import com.shareshelf.backend.event.ReviewPostedEvent;
 import com.shareshelf.backend.exception.ResourceNotFoundException;
 import com.shareshelf.backend.exception.UnauthorizedException;
 import com.shareshelf.backend.repository.BookRepository;
@@ -34,6 +36,7 @@ public class ReviewService {
     private final BookRepository bookRepository;
     private final BorrowRepository borrowRepository;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     // ── Submit a review ───────────────────────────────────────────────────
 
@@ -82,7 +85,9 @@ public class ReviewService {
                 .comment(request.getComment())
                 .build();
 
-        return mapToResponse(reviewRepository.save(review));
+        Review saved = reviewRepository.save(review);
+        eventPublisher.publishEvent(new ReviewPostedEvent(this, saved));     // ✅
+        return mapToResponse(saved);
     }
 
     // ── Get all reviews for a book ────────────────────────────────────────
