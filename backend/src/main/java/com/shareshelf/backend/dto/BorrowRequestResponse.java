@@ -2,7 +2,7 @@ package com.shareshelf.backend.dto;
 
 import java.time.LocalDateTime;
 
-import com.shareshelf.backend.entity.BorrowRequest.BorrowStatus;
+import com.shareshelf.backend.entity.BorrowStatus;
 
 import lombok.Builder;
 import lombok.Data;

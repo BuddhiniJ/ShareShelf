@@ -25,6 +25,9 @@ public class BookResponse {
     // Owner summary — never expose full User entity
     private Long ownerId;
     private String ownerName;
+    
+    private Double averageRating;       // null if no reviews yet
+    private Long reviewCount;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

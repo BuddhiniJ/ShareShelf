@@ -18,6 +18,7 @@ import com.shareshelf.backend.exception.ResourceNotFoundException;
 import com.shareshelf.backend.exception.UnauthorizedException;
 import com.shareshelf.backend.repository.BookRepository;
 import com.shareshelf.backend.repository.PagedResponse;
+import com.shareshelf.backend.repository.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class BookService {
 
 	private final BookRepository bookRepository;
-	private final UserService userService; // reuse getCurrentUser()
+	private final UserService userService; 
+	private final ReviewRepository reviewRepository;
 
 	// ── Create a new book listing ─────────────────────────────────────────
 
@@ -124,11 +126,26 @@ public class BookService {
 
 	// Entity → DTO
 	private BookResponse mapToResponse(Book book) {
-		return BookResponse.builder().id(book.getId()).title(book.getTitle()).author(book.getAuthor())
-				.isbn(book.getIsbn()).description(book.getDescription()).coverImage(book.getCoverImage())
-				.book_condition(book.getCondition()).book_status(book.getStatus()).genre(book.getGenre())
-				.ownerId(book.getOwner().getId()).ownerName(book.getOwner().getName()).createdAt(book.getCreatedAt())
-				.updatedAt(book.getUpdatedAt()).build();
+		Double avgRating = reviewRepository.getAverageRatingByBook(book);
+	    Long reviewCount = reviewRepository.countByBook(book);
+	    
+	    return BookResponse.builder()
+	            .id(book.getId())
+	            .title(book.getTitle())
+	            .author(book.getAuthor())
+	            .isbn(book.getIsbn())
+	            .description(book.getDescription())
+	            .coverImage(book.getCoverImage())
+	            .book_condition(book.getCondition())
+	            .book_status(book.getStatus())
+	            .genre(book.getGenre())
+	            .ownerId(book.getOwner().getId())
+	            .ownerName(book.getOwner().getName())
+	            .averageRating(avgRating)           // ✅ new
+	            .reviewCount(reviewCount)           // ✅ new
+	            .createdAt(book.getCreatedAt())
+	            .updatedAt(book.getUpdatedAt())
+	            .build();
 	}
 
 	// Page<Book> → PagedResponse<BookResponse>

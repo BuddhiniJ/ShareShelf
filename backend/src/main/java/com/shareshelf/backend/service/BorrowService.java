@@ -14,7 +14,7 @@ import com.shareshelf.backend.dto.BorrowRequestResponse;
 import com.shareshelf.backend.entity.Book;
 import com.shareshelf.backend.entity.Book.BookStatus;
 import com.shareshelf.backend.entity.BorrowRequest;
-import com.shareshelf.backend.entity.BorrowRequest.BorrowStatus;
+import com.shareshelf.backend.entity.BorrowStatus;
 import com.shareshelf.backend.entity.User;
 import com.shareshelf.backend.exception.ResourceNotFoundException;
 import com.shareshelf.backend.exception.UnauthorizedException;
@@ -52,11 +52,15 @@ public class BorrowService {
         }
 
         // No duplicate active requests
-        borrowRepository.findActiveBorrowRequest(borrower, book).ifPresent(existing -> {
-            throw new IllegalStateException(
-                "You already have an active borrow request for this book"
-            );
-        });
+        borrowRepository.findActiveBorrowRequest(
+        	    borrower,
+        	    book,
+        	    List.of(BorrowStatus.PENDING, BorrowStatus.APPROVED)   // ✅ pass as parameter
+        	).ifPresent(existing -> {
+        	    throw new IllegalStateException(
+        	        "You already have an active borrow request for this book"
+        	    );
+        	});
 
         BorrowRequest request = BorrowRequest.builder()
                 .borrower(borrower)

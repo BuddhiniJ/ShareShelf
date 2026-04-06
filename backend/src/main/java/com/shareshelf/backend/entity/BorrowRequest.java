@@ -53,12 +53,5 @@ public class BorrowRequest {
 
     private LocalDateTime dueDate;  // set when approved
     
-    public enum BorrowStatus {
-        PENDING,
-        APPROVED,
-        REJECTED,
-        CANCELLED,
-        RETURNED
-    }
 
 }

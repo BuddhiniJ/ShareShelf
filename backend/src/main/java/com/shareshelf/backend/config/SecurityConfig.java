@@ -37,7 +37,8 @@ public class SecurityConfig {
                         "/api/books",
                         "/api/books/{id}",
                         "/api/books/search",
-                        "/api/books/genre"
+                        "/api/books/genre",
+                        "/api/reviews/{bookId}"
                     ).permitAll()
                 .anyRequest().authenticated()
             )
