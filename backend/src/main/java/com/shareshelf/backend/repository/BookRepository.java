@@ -35,4 +35,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
         BookStatus status,
         Pageable pageable
     );
+    
+ // Count by status — for stats
+    long countByStatus(BookStatus status);
+
+    // Admin: all books regardless of status, with owner filter option
+    Page<Book> findAll(Pageable pageable);
+
+	long countByOwner(User user);
 }

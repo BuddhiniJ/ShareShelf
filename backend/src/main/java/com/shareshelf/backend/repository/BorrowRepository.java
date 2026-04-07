@@ -69,4 +69,17 @@ public interface BorrowRepository extends JpaRepository<BorrowRequest, Long> {
         @Param("id") Long id,
         @Param("borrower") User borrower, BorrowStatus returned
     );
+    
+ // Count by status — for stats
+    long countByStatus(BorrowStatus status);
+
+    // Total borrows made by a user
+    long countByBorrower(User borrower);
+
+    // Total borrow requests received for a user's books
+    @Query("""
+        SELECT COUNT(br) FROM BorrowRequest br
+        WHERE br.book.owner = :owner
+        """)
+    long countByBookOwner(@Param("owner") User owner);
 }

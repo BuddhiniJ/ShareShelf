@@ -34,4 +34,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         AND n.isRead = false
         """)
     void markAllAsReadForUser(@Param("recipient") User recipient);
+    
+ // Platform-wide unread count — for admin stats
+    @Query("SELECT COUNT(n) FROM Notification n WHERE n.isRead = false")
+    long countAllUnread();
 }

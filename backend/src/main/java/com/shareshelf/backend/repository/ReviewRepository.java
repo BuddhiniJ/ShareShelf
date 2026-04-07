@@ -48,4 +48,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         @Param("owner") User owner,
         Pageable pageable
     );
+    
+ // Count reviews written by a user
+    long countByReviewer(User reviewer);
+
+    // Platform-wide average rating
+    @Query("SELECT COALESCE(AVG(r.rating), 0.0) FROM Review r")
+    double getPlatformAverageRating();
 }
