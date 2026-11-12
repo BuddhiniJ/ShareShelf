@@ -1,6 +1,6 @@
 # ShareShelf
 
-A web-based platform where users can share their personal book collections, request books, borrow books from others, and leave reviews. The system includes a trust-based borrowing mechanism to encourage responsible sharing.
+A web-based platform where users can share their personal book collections, request books, borrow books from others, and leave reviews. The system includes a trust-based borrowing mechanism to encourage responsible sharing among the users.
 
 ## Features
 - Authentication (JWT)
